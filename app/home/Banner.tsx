@@ -26,7 +26,7 @@ const stats = [
 
 export function Banner() {
   return (
-    <section className="relative isolate overflow-hidden bg-black text-white">
+    <section className="mt-30 relative isolate overflow-hidden bg-black text-white">
       {/* Hero */}
       <div className="relative z-10 mx-auto flex max-w-[640px] flex-col items-center px-4 pt-2 text-center sm:pt-3">
         <div className="flex items-center justify-center gap-4">
