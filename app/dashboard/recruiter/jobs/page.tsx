@@ -1,125 +1,39 @@
-import Link from "next/link"
+
+import Link from "next/link";
 import {
   ChevronRightIcon,
-  CopyIcon,
   MapPinIcon,
   PencilIcon,
   PlusIcon,
   Trash2Icon,
   UsersIcon,
-} from "lucide-react"
-import { cn } from "cn"
+  CopyIcon,
+} from "lucide-react";
 
-type JobStatus = "Active" | "Expired"
+import { cn } from "cn";
+import { getJobs } from "@/lib/api/jobs";
+
+type JobStatus = "Active" | "Expired";
 
 type Job = {
-  id: string
-  title: string
-  department: string
-  company: string
-  location: string
-  type: "Full-time" | "Part-time" | "Contract" | "Internship"
-  compensation: string
-  applicants: number
-  status: JobStatus
-  deadline: string
-  deadlineNote: string
-  logo: {
-    label: string
-    className: string
-  }
-}
-
-const jobs: Job[] = [
-  {
-    id: "frontend-developer",
-    title: "Frontend Developer",
-    department: "Engineering",
-    company: "HirePulse Network",
-    location: "Remote (New York, USA)",
-    type: "Full-time",
-    compensation: "€25 - €40 / hr",
-    applicants: 34,
-    status: "Active",
-    deadline: "May 30, 2025",
-    deadlineNote: "Posted 40d ago",
-    logo: {
-      label: "H",
-      className: "bg-[#5C53FE] text-white",
-    },
-  },
-  {
-    id: "senior-product-designer",
-    title: "Senior Product Designer",
-    department: "Design",
-    company: "HirePulse Labs",
-    location: "London, UK (Hybrid)",
-    type: "Full-time",
-    compensation: "€90k - €115k / yr",
-    applicants: 19,
-    status: "Active",
-    deadline: "Jan 14, 2025",
-    deadlineNote: "Posted 8d ago",
-    logo: {
-      label: "X",
-      className: "bg-[#F97316] text-white",
-    },
-  },
-  {
-    id: "devops-specialist",
-    title: "DevOps Specialist",
-    department: "Infrastructure",
-    company: "HirePulse Platforms",
-    location: "Berlin, Germany",
-    type: "Full-time",
-    compensation: "€95k - €120k / yr",
-    applicants: 12,
-    status: "Active",
-    deadline: "Jan 30, 2025",
-    deadlineNote: "Posted 22d ago",
-    logo: {
-      label: "P",
-      className: "bg-[#38BDF8] text-[#0B0B0C]",
-    },
-  },
-  {
-    id: "product-marketing-lead",
-    title: "Product Marketing Lead",
-    department: "Marketing",
-    company: "HirePulse Network",
-    location: "Remote (EU/US)",
-    type: "Full-time",
-    compensation: "€80k - €105k / yr",
-    applicants: 27,
-    status: "Active",
-    deadline: "Jul 15, 2025",
-    deadlineNote: "Posted 5d ago",
-    logo: {
-      label: "H",
-      className: "bg-[#5C53FE] text-white",
-    },
-  },
-  {
-    id: "qa-automation-engineer",
-    title: "QA Automation Engineer",
-    department: "Quality",
-    company: "HirePulse Platform",
-    location: "Dublin, Ireland (Hybrid)",
-    type: "Part-time",
-    compensation: "€35 - €50 / hr",
-    applicants: 8,
-    status: "Expired",
-    deadline: "May 01, 2025",
-    deadlineNote: "Closed",
-    logo: {
-      label: "P",
-      className: "bg-[#2563EB] text-white",
-    },
-  },
-]
+  _id: string;
+  jobTitle: string;
+  companyName: string;
+  category: string;
+  jobType: "Full-time" | "Part-time" | "Contract" | "Internship";
+  isRemote: boolean;
+  location: string;
+  deadline: string;
+  minSalary: string;
+  maxSalary: string;
+  frequency: string;
+  responsibilities: string;
+  qualifications: string;
+  applicants?: number;
+};
 
 const StatusBadge = ({ status }: { status: JobStatus }) => {
-  const isActive = status === "Active"
+  const isActive = status === "Active";
 
   return (
     <span
@@ -138,13 +52,17 @@ const StatusBadge = ({ status }: { status: JobStatus }) => {
       />
       {status}
     </span>
-  )
-}
+  );
+};
 
-const ManageJobsPage = () => {
+const ManageJobsPage = async () => {
+  const jobs: Job[] = await getJobs();
+
   return (
     <div className="min-h-svh bg-[#0B0B0C] px-4 py-6 text-[#F4F4F5] sm:px-6 lg:px-8 lg:py-8">
       <div className="mx-auto w-full max-w-[1200px]">
+
+        {/* Header */}
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <nav
@@ -157,7 +75,9 @@ const ManageJobsPage = () => {
               >
                 Manage Jobs
               </Link>
+
               <ChevronRightIcon className="size-3" />
+
               <span className="text-[#A1A4AA]">
                 Job Listings &amp; Posting
               </span>
@@ -166,6 +86,7 @@ const ManageJobsPage = () => {
             <h1 className="mt-4 text-2xl leading-8 font-semibold tracking-[-0.02em] text-white">
               Manage Job Posts
             </h1>
+
             <p className="mt-1 text-xs text-[#7C7F87]">
               Review live listings, monitor applicants, and update job details
               across your organization.
@@ -181,9 +102,12 @@ const ManageJobsPage = () => {
           </Link>
         </div>
 
+        {/* Jobs Table */}
         <div className="overflow-x-auto border-y border-white/[0.06]">
           <table className="w-full min-w-[1020px] border-collapse text-left">
-            <caption className="sr-only">List of job posts</caption>
+            <caption className="sr-only">
+              List of job posts
+            </caption>
 
             <thead>
               <tr className="bg-[#111113]">
@@ -213,113 +137,156 @@ const ManageJobsPage = () => {
             </thead>
 
             <tbody>
-              {jobs.map((job) => (
-                <tr
-                  key={job.id}
-                  className="border-b border-white/[0.05] transition-colors last:border-b-0 hover:bg-white/[0.02]"
-                >
-                  <td className="px-3 py-2.5 pl-4">
-                    <div className="flex items-center gap-2.5">
-                      <span
-                        className={cn(
-                          "flex size-6 shrink-0 items-center justify-center rounded-[5px] text-[10px] font-bold ring-1 ring-white/10",
-                          job.logo.className
-                        )}
-                      >
-                        {job.logo.label}
-                      </span>
+              {jobs.length > 0 ? (
+                jobs.map((job) => {
+                  const status: JobStatus =
+                    new Date(job.deadline) >= new Date()
+                      ? "Active"
+                      : "Expired";
 
-                      <div className="min-w-0">
-                        <p className="truncate text-xs leading-4 font-medium text-[#F4F4F5]">
-                          {job.title}
+                  return (
+                    <tr
+                      key={job._id}
+                      className="border-b border-white/[0.05] transition-colors last:border-b-0 hover:bg-white/[0.02]"
+                    >
+                      {/* Job Title & Department */}
+                      <td className="px-3 py-2.5 pl-4">
+                        <div className="flex items-center gap-2.5">
+                          <span
+                            className="flex size-6 shrink-0 items-center justify-center rounded-[5px] bg-[#5C53FE]/15 text-[10px] font-bold text-[#B3AEFF] ring-1 ring-white/10"
+                          >
+                            {job.companyName?.charAt(0) || "J"}
+                          </span>
+
+                          <div className="min-w-0">
+                            <p className="truncate text-xs leading-4 font-medium text-[#F4F4F5]">
+                              {job.jobTitle}
+                            </p>
+
+                            <p className="mt-0.5 truncate text-[10px] leading-3 text-[#7C7F87]">
+                              {job.category}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Company & Location */}
+                      <td className="px-3 py-2.5">
+                        <p className="text-xs leading-4 whitespace-nowrap text-[#D4D4D8]">
+                          {job.companyName}
                         </p>
-                        <p className="mt-0.5 truncate text-[10px] leading-3 text-[#7C7F87]">
-                          {job.department}
+
+                        <p className="mt-0.5 flex items-center gap-1 text-[10px] leading-3 whitespace-nowrap text-[#7C7F87]">
+                          <MapPinIcon className="size-2.5 shrink-0" />
+                          {job.isRemote ? "Remote" : job.location}
                         </p>
-                      </div>
-                    </div>
-                  </td>
+                      </td>
 
-                  <td className="px-3 py-2.5">
-                    <p className="text-xs leading-4 whitespace-nowrap text-[#D4D4D8]">
-                      {job.company}
-                    </p>
-                    <p className="mt-0.5 flex items-center gap-1 text-[10px] leading-3 whitespace-nowrap text-[#7C7F87]">
-                      <MapPinIcon className="size-2.5 shrink-0" />
-                      {job.location}
-                    </p>
-                  </td>
+                      {/* Job Type */}
+                      <td className="px-3 py-2.5 text-xs whitespace-nowrap text-[#A1A4AA]">
+                        {job.jobType}
+                      </td>
 
-                  <td className="px-3 py-2.5 text-xs whitespace-nowrap text-[#A1A4AA]">
-                    {job.type}
-                  </td>
+                      {/* Compensation */}
+                      <td className="px-3 py-2.5 text-xs whitespace-nowrap text-[#D4D4D8]">
+                        ${job.minSalary} - ${job.maxSalary}
+                        <span className="text-[#7C7F87]">
+                          {" "}/ {job.frequency}
+                        </span>
+                      </td>
 
-                  <td className="px-3 py-2.5 text-xs whitespace-nowrap text-[#D4D4D8]">
-                    {job.compensation}
-                  </td>
+                      {/* Applicants */}
+                      <td className="px-3 py-2.5">
+                        <span className="flex items-center gap-1.5 text-[11px] whitespace-nowrap">
+                          <UsersIcon className="size-3 text-[#7C7F87]" />
 
-                  <td className="px-3 py-2.5">
-                    <span className="flex items-center gap-1.5 text-[11px] whitespace-nowrap">
-                      <UsersIcon className="size-3 text-[#7C7F87]" />
-                      <span className="text-[#D4D4D8]">
-                        {job.applicants}
-                      </span>
-                      <span className="text-[#7C7F87]">Candidates</span>
-                    </span>
-                  </td>
+                          <span className="text-[#D4D4D8]">
+                            {job.applicants ?? 0}
+                          </span>
 
-                  <td className="px-3 py-2.5">
-                    <StatusBadge status={job.status} />
-                  </td>
+                          <span className="text-[#7C7F87]">
+                            Candidates
+                          </span>
+                        </span>
+                      </td>
 
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    <p className="text-[11px] leading-4 text-[#D4D4D8]">
-                      {job.deadline}
-                    </p>
-                    <p className="mt-0.5 text-[10px] leading-3 text-[#7C7F87]">
-                      {job.deadlineNote}
-                    </p>
-                  </td>
+                      {/* Status */}
+                      <td className="px-3 py-2.5">
+                        <StatusBadge status={status} />
+                      </td>
 
-                  <td className="px-3 py-2.5 pr-4">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <button
-                        type="button"
-                        aria-label={`Edit ${job.title}`}
-                        title="Edit job"
-                        className="inline-flex h-6 items-center gap-1 rounded-md border border-[#5C53FE]/35 bg-[#5C53FE]/[0.08] px-2 text-[10px] font-medium text-[#B3AEFF] transition-colors hover:bg-[#5C53FE]/[0.16] focus-visible:ring-2 focus-visible:ring-[#5C53FE]/60 focus-visible:outline-none"
-                      >
-                        <PencilIcon className="size-2.5" />
-                        Update
-                      </button>
+                      {/* Deadline */}
+                      <td className="px-3 py-2.5 whitespace-nowrap">
+                        <p className="text-[11px] leading-4 text-[#D4D4D8]">
+                          {new Date(job.deadline).toLocaleDateString(
+                            "en-GB",
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            }
+                          )}
+                        </p>
 
-                      <button
-                        type="button"
-                        aria-label={`Duplicate ${job.title}`}
-                        title="Duplicate job"
-                        className="inline-flex size-6 items-center justify-center rounded-md text-[#7C7F87] transition-colors hover:bg-white/[0.06] hover:text-[#F4F4F5] focus-visible:ring-2 focus-visible:ring-[#5C53FE]/60 focus-visible:outline-none"
-                      >
-                        <CopyIcon className="size-3" />
-                      </button>
+                        <p className="mt-0.5 text-[10px] leading-3 text-[#7C7F87]">
+                          Application deadline
+                        </p>
+                      </td>
 
-                      <button
-                        type="button"
-                        aria-label={`Delete ${job.title}`}
-                        title="Delete job"
-                        className="inline-flex size-6 items-center justify-center rounded-md text-[#7C7F87] transition-colors hover:bg-[#F87171]/10 hover:text-[#F87171] focus-visible:ring-2 focus-visible:ring-[#F87171]/60 focus-visible:outline-none"
-                      >
-                        <Trash2Icon className="size-3" />
-                      </button>
-                    </div>
+                      {/* Actions */}
+                      <td className="px-3 py-2.5 pr-4">
+                        <div className="flex items-center justify-end gap-1.5">
+
+                          <Link
+                            href={`/dashboard/recruiter/jobs/${job._id}/edit`}
+                            aria-label={`Edit ${job.jobTitle}`}
+                            title="Edit job"
+                            className="inline-flex h-6 items-center gap-1 rounded-md border border-[#5C53FE]/35 bg-[#5C53FE]/[0.08] px-2 text-[10px] font-medium text-[#B3AEFF] transition-colors hover:bg-[#5C53FE]/[0.16] focus-visible:ring-2 focus-visible:ring-[#5C53FE]/60 focus-visible:outline-none"
+                          >
+                            <PencilIcon className="size-2.5" />
+                            Update
+                          </Link>
+
+                          <button
+                            type="button"
+                            aria-label={`Duplicate ${job.jobTitle}`}
+                            title="Duplicate job"
+                            className="inline-flex size-6 items-center justify-center rounded-md text-[#7C7F87] transition-colors hover:bg-white/[0.06] hover:text-[#F4F4F5] focus-visible:ring-2 focus-visible:ring-[#5C53FE]/60 focus-visible:outline-none"
+                          >
+                            <CopyIcon className="size-3" />
+                          </button>
+
+                          <button
+                            type="button"
+                            aria-label={`Delete ${job.jobTitle}`}
+                            title="Delete job"
+                            className="inline-flex size-6 items-center justify-center rounded-md text-[#7C7F87] transition-colors hover:bg-[#F87171]/10 hover:text-[#F87171] focus-visible:ring-2 focus-visible:ring-[#F87171]/60 focus-visible:outline-none"
+                          >
+                            <Trash2Icon className="size-3" />
+                          </button>
+
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td
+                    colSpan={8}
+                    className="px-4 py-12 text-center text-sm text-[#7C7F87]"
+                  >
+                    No jobs found. Create your first job post.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
+
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ManageJobsPage
+export default ManageJobsPage;
