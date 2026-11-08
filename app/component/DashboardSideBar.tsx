@@ -1,4 +1,5 @@
-'use client'
+
+"use client"
 
 import Image from "next/image"
 import Link from "next/link"
@@ -27,6 +28,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+
 import { authClient, useSession } from "@/lib/auth-client"
 
 type Role = "seeker" | "recruiter" | "admin"
@@ -53,57 +55,64 @@ const menuItemsByRole: Record<Role, MenuItem[]> = {
   seeker: [
     {
       name: "Dashboard",
-      url: "/dashboard/seekers",
+      url: "/dashboard/seeker",
       icon: LayoutDashboardIcon,
     },
     {
       name: "Jobs",
-      url: "/dashboard/seekers/jobs",
+      url: "/dashboard/seeker/jobs",
       icon: BriefcaseIcon,
     },
     {
       name: "Saved Jobs",
-      url: "/dashboard/seekers/saved",
+      url: "/dashboard/seeker/saved",
       icon: BookmarkIcon,
     },
     {
       name: "Applications",
-      url: "/dashboard/seekers/applications",
+      url: "/dashboard/seeker/applications",
       icon: FileTextIcon,
     },
     {
       name: "Billing",
-      url: "/dashboard/seekers/billing",
+      url: "/dashboard/seeker/billing",
       icon: WalletIcon,
     },
     {
       name: "Settings",
-      url: "/dashboard/seekers/settings",
+      url: "/dashboard/seeker/settings",
       icon: SettingsIcon,
     },
   ],
+
   recruiter: [
     {
       name: "Dashboard",
-      url: "/dashboard/reqruiter",
+      url: "/dashboard/recruiter",
       icon: LayoutDashboardIcon,
     },
     {
+      name: "Add Job",
+      url: "/dashboard/recruiter/jobs/new",
+      icon: BriefcaseIcon,
+    },
+    {
       name: "Manage Jobs",
-      url: "/dashboard/reqruiter/jobs",
+      url: "/dashboard/recruiter/jobs",
       icon: BriefcaseIcon,
     },
     {
       name: "Applications",
-      url: "/dashboard/reqruiter/applications",
+      url: "/dashboard/recruiter/applications",
       icon: FileTextIcon,
     },
     {
       name: "Settings",
-      url: "/dashboard/reqruiter/settings",
+      url: "/dashboard/recruiter/settings",
       icon: SettingsIcon,
     },
   ],
+
   admin: [
     {
       name: "Dashboard",
@@ -147,6 +156,7 @@ const roleConfig: Record<Role, RoleConfig> = {
     showCta: true,
     showLogout: true,
   },
+
   recruiter: {
     name: "Alex Sterling",
     subtitle: "Recruiter",
@@ -154,6 +164,7 @@ const roleConfig: Record<Role, RoleConfig> = {
     badge: "Premium account",
     showIdentity: true,
   },
+
   admin: {
     name: "Alex Rivera",
     subtitle: "Super Admin",
@@ -174,7 +185,9 @@ const getRole = (role: string | null | undefined): Role => {
 const getActiveUrl = (pathname: string, items: MenuItem[]) => {
   return items
     .filter(
-      (item) => pathname === item.url || pathname.startsWith(`${item.url}/`)
+      (item) =>
+        pathname === item.url ||
+        pathname.startsWith(`${item.url}/`)
     )
     .sort((a, b) => b.url.length - a.url.length)[0]?.url
 }
@@ -204,12 +217,15 @@ const Avatar = ({
 const DashboardSideBar = () => {
   const pathname = usePathname()
   const router = useRouter()
+
   const { data: session } = useSession()
 
   const role = getRole(session?.user?.role)
   const config = roleConfig[role]
   const items = menuItemsByRole[role]
+
   const activeUrl = getActiveUrl(pathname, items)
+
   const userName = session?.user?.name || config.name
   const avatar = session?.user?.image || config.avatar
 
@@ -228,9 +244,10 @@ const DashboardSideBar = () => {
         } as React.CSSProperties
       }
     >
+      {/* Header */}
       <SidebarHeader className="gap-0 px-3 pt-5">
         <Link
-          href={items[0].url}
+          href="/"
           className="flex w-fit flex-col items-start gap-0.5"
         >
           <Image
@@ -241,6 +258,7 @@ const DashboardSideBar = () => {
             priority
             className="h-8 w-auto"
           />
+
           {config.showBrandSubtitle && (
             <span className="text-xs leading-4 font-medium text-[#7C7F87]">
               Admin Console
@@ -249,17 +267,27 @@ const DashboardSideBar = () => {
         </Link>
       </SidebarHeader>
 
+      {/* Sidebar Content */}
       <SidebarContent className="gap-0 px-3 pt-4">
+
+        {/* User Identity */}
         {config.showIdentity && (
           <div className="flex items-center gap-3 rounded-[10px] border border-white/[0.06] bg-[#141416] p-2.5">
-            <Avatar src={avatar} name={userName} className="size-8" />
+            <Avatar
+              src={avatar}
+              name={userName}
+              className="size-8"
+            />
+
             <div className="flex min-w-0 flex-col gap-0.5">
               <span className="truncate text-sm leading-5 font-semibold text-[#F4F4F5]">
                 {userName}
               </span>
+
               <span className="truncate text-xs leading-4 text-[#A1A4AA]">
                 {config.subtitle}
               </span>
+
               {config.badge && (
                 <span className="mt-0.5 w-fit rounded-full border border-[#5C53FE]/[0.32] bg-[#5C53FE]/[0.14] px-2 py-0.5 text-[11px] leading-4 font-semibold text-[#8F88FF]">
                   {config.badge}
@@ -269,13 +297,14 @@ const DashboardSideBar = () => {
           </div>
         )}
 
+        {/* Navigation Menu */}
         <SidebarGroup className="mt-2.5 p-0">
           <SidebarMenu className="gap-0.5">
             {items.map((item) => {
               const isActive = item.url === activeUrl
 
               return (
-                <SidebarMenuItem key={item.url}>
+                <SidebarMenuItem key={item.name}>
                   <SidebarMenuButton
                     render={<Link href={item.url} />}
                     tooltip={item.name}
@@ -290,6 +319,7 @@ const DashboardSideBar = () => {
                     {isActive && (
                       <span className="absolute top-1/2 left-0 h-4 w-0.5 -translate-y-1/2 rounded-full bg-[#5C53FE]" />
                     )}
+
                     <item.icon
                       className={cn(
                         "shrink-0",
@@ -298,6 +328,7 @@ const DashboardSideBar = () => {
                           : "text-[#7C7F87] group-hover/menu-button:text-[#A1A4AA]"
                       )}
                     />
+
                     <span>{item.name}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -307,16 +338,19 @@ const DashboardSideBar = () => {
         </SidebarGroup>
       </SidebarContent>
 
+      {/* Sidebar Footer */}
       <SidebarFooter className="gap-3 px-3 pb-4">
+
         {config.showCta && (
           <Link
-            href="/dashboard/seekers/settings"
+            href="/dashboard/seeker/settings"
             className="flex h-10 w-full items-center justify-center rounded-[10px] bg-[#FAFAFA] text-sm font-semibold text-[#0B0B0C] transition-colors hover:bg-white"
           >
             Post Resume
           </Link>
         )}
 
+        {/* Logout */}
         {config.showLogout && (
           <button
             type="button"
@@ -328,13 +362,20 @@ const DashboardSideBar = () => {
           </button>
         )}
 
+        {/* Admin User Card */}
         {config.showUserCard && (
           <div className="flex items-center gap-2.5 rounded-[10px] border border-white/[0.06] bg-[#141416] p-2.5">
-            <Avatar src={avatar} name={userName} className="size-8" />
+            <Avatar
+              src={avatar}
+              name={userName}
+              className="size-8"
+            />
+
             <div className="flex min-w-0 flex-col gap-0.5">
               <span className="truncate text-[13px] leading-[18px] font-semibold text-[#F4F4F5]">
                 {userName}
               </span>
+
               <span className="truncate text-xs leading-4 text-[#7C7F87]">
                 {config.subtitle}
               </span>

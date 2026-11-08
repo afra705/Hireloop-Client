@@ -1,20 +1,23 @@
-import type { CSSProperties } from "react"
+import {
+  SidebarProvider,
+  SidebarInset,
+} from "@/components/ui/sidebar";
+import DashboardSideBar from "../component/DashboardSideBar";
 
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import DashboardSideBar from "../component/DashboardSideBar"
 
-const DashboardLayoutPage = ({ children }: { children: React.ReactNode }) => {
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <SidebarProvider
-      style={{ "--sidebar-width": "248px" } as CSSProperties}
-    >
+    <SidebarProvider>
       <DashboardSideBar />
-      <main>
-        <SidebarTrigger />
-        {children}
-      </main>
-    </SidebarProvider>
-  )
-}
 
-export default DashboardLayoutPage
+      <SidebarInset className="min-w-0 overflow-x-hidden bg-[#0B0B0C]">
+        {children}
+      </SidebarInset>
+    </SidebarProvider>
+  );
+}

@@ -1,24 +1,19 @@
-
 "use client"
-
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-
 import { buttonVariants } from "@/components/ui/button"
 import { authClient } from "@/lib/auth-client"
 
+export function Navbar() {
+  const router = useRouter()
+  const { data: session, isPending } = authClient.useSession()
 const navLinks = [
   { label: "Browse Jobs", href: "/jobs" },
   { label: "Company", href: "/company" },
   { label: "Pricing", href: "/pricing" },
+  { label: "Dashboard", href: `/dashboard/${session?.user.role}` },
 ]
-
-export function Navbar() {
-  const router = useRouter()
-
-  const { data: session, isPending } = authClient.useSession()
-
   const handleLogout = async () => {
     try {
       await authClient.signOut({
