@@ -14,12 +14,13 @@ import {
   Wallet,
 } from "lucide-react";
 import { toast } from "sonner";
+import { CreatJob } from "@/lib/actions/jobs";
 
 type JobType = "Full-time" | "Part-time" | "Contract" | "Internship";
 
 type Frequency = "Yearly" | "Monthly" | "Weekly" | "Hourly";
 
-type JobForm = {
+export type JobForm = {
   jobTitle: string;
   companyName: string;
   category: string;
@@ -108,11 +109,21 @@ const AddJobsPage = () => {
     }));
   };
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const formData = new FormData(event.currentTarget)
-    const data = Object.fromEntries(formData.entries())
+const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
+
+  const result = await CreatJob(formData);
+
+  console.log("result:", result);
+
+  if (result.insertedId) {
+    toast.success("Job created successfully!");
+    setFormData(initialForm);
+    // router.push("/dashboard/recruiter/jobs");
+  } else {
+    toast.error("Failed to create job!");
   }
+};
 
   return (
     <main className="min-h-svh w-full min-w-0 overflow-x-hidden bg-[#0B0B0C] px-4 py-6 text-[#F4F4F5] sm:px-6 lg:px-8 lg:py-8 [color-scheme:dark]">
