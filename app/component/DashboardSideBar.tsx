@@ -230,9 +230,10 @@ const DashboardSideBar = () => {
   const avatar = session?.user?.image || config.avatar
 
   const handleLogout = async () => {
-    await authClient.signOut()
-    router.push("/")
-  }
+  await authClient.signOut();
+
+  router.replace("/");
+};
 
   return (
     <Sidebar

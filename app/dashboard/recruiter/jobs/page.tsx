@@ -5,13 +5,13 @@ import {
   MapPinIcon,
   PencilIcon,
   PlusIcon,
-  Trash2Icon,
   UsersIcon,
   CopyIcon,
 } from "lucide-react";
 
 import { cn } from "cn";
 import { getJobs } from "@/lib/api/jobs";
+import DeleteJobDialog from "./delete-job-dialog";
 
 type JobStatus = "Active" | "Expired";
 
@@ -256,14 +256,10 @@ const ManageJobsPage = async () => {
                             <CopyIcon className="size-3" />
                           </button>
 
-                          <button
-                            type="button"
-                            aria-label={`Delete ${job.jobTitle}`}
-                            title="Delete job"
-                            className="inline-flex size-6 items-center justify-center rounded-md text-[#7C7F87] transition-colors hover:bg-[#F87171]/10 hover:text-[#F87171] focus-visible:ring-2 focus-visible:ring-[#F87171]/60 focus-visible:outline-none"
-                          >
-                            <Trash2Icon className="size-3" />
-                          </button>
+                          <DeleteJobDialog
+                            jobId={job._id}
+                            jobTitle={job.jobTitle}
+                          />
 
                         </div>
                       </td>
