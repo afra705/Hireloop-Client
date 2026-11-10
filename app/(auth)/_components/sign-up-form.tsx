@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import {
   BriefcaseBusiness,
@@ -10,15 +9,15 @@ import {
   UserRound,
 } from "lucide-react"
 
+import { AuthCard } from "@/components/auth/auth-card"
+import { AuthField, authFieldClassName } from "@/components/auth/auth-field"
+import { FormAlert } from "@/components/auth/form-alert"
 import { PasswordInput } from "@/app/(auth)/_components/password-input"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { signUp } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
-
-const fieldClassName =
-  "h-11 rounded-xl border-white/10 bg-white/[0.04] px-3.5 text-sm text-white shadow-none placeholder:text-white/25 focus-visible:border-brand/60 focus-visible:ring-3 focus-visible:ring-brand/20"
+import type { Role } from "@/types/auth"
 
 const roles = [
   {
@@ -40,8 +39,6 @@ const roles = [
     icon: ShieldCheck,
   },
 ] as const
-
-type Role = (typeof roles)[number]["value"]
 
 export function SignUpForm() {
   const router = useRouter()
@@ -95,25 +92,16 @@ export function SignUpForm() {
     }
   }
   return (
-    <div className="relative rounded-2xl border border-white/[0.08] bg-[#0c0c0c]/95 p-6 shadow-[0_32px_120px_-40px_rgba(0,0,0,1)] backdrop-blur-xl sm:p-8">
-      <div className="mb-6">
-        <h2 className="text-2xl font-semibold tracking-tight">
-          Create your account
-        </h2>
-        <p className="mt-1.5 text-sm text-[#9a9a9a]">
-          Start applying to your next role in minutes.
-        </p>
-      </div>
-
+    <AuthCard
+      title="Create your account"
+      description="Start applying to your next role in minutes."
+      shieldText="Free to join. No credit card required."
+      footerPrompt="Already have an account?"
+      footerLinkText="Sign in"
+      footerLinkHref="/sign-in"
+    >
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error ? (
-          <div
-            role="alert"
-            className="rounded-xl border border-red-500/25 bg-red-500/10 px-3.5 py-3 text-[13px] leading-relaxed text-red-200"
-          >
-            {error}
-          </div>
-        ) : null}
+        {error ? <FormAlert>{error}</FormAlert> : null}
 
         <fieldset className="space-y-2">
           <legend className="text-[13px] font-medium text-[#d4d4d4]">
@@ -157,13 +145,8 @@ export function SignUpForm() {
             {roles.find((option) => option.value === role)?.description}
           </p>
         </fieldset>
-        <div className="space-y-2">
-          <Label
-            htmlFor="name"
-            className="text-[13px] font-medium text-[#d4d4d4]"
-          >
-            Full name
-          </Label>
+
+        <AuthField label="Full name" htmlFor="name">
           <Input
             id="name"
             name="name"
@@ -171,17 +154,11 @@ export function SignUpForm() {
             autoComplete="name"
             placeholder="Your full name"
             required
-            className={fieldClassName}
+            className={authFieldClassName}
           />
-        </div>
+        </AuthField>
 
-        <div className="space-y-2">
-          <Label
-            htmlFor="email"
-            className="text-[13px] font-medium text-[#d4d4d4]"
-          >
-            Email address
-          </Label>
+        <AuthField label="Email address" htmlFor="email">
           <Input
             id="email"
             name="email"
@@ -189,18 +166,15 @@ export function SignUpForm() {
             autoComplete="email"
             placeholder="you@example.com"
             required
-            className={fieldClassName}
+            className={authFieldClassName}
           />
-        </div>
+        </AuthField>
 
-
-        <div className="space-y-2">
-          <Label
-            htmlFor="password"
-            className="text-[13px] font-medium text-[#d4d4d4]"
-          >
-            Password
-          </Label>
+        <AuthField
+          label="Password"
+          htmlFor="password"
+          hint="Use at least 8 characters."
+        >
           <PasswordInput
             id="password"
             name="password"
@@ -208,12 +182,9 @@ export function SignUpForm() {
             placeholder="Create a password"
             required
             minLength={8}
-            className={fieldClassName}
+            className={authFieldClassName}
           />
-          <p className="text-[11px] text-[#7d7d7d]">
-            Use at least 8 characters.
-          </p>
-        </div>
+        </AuthField>
 
         <Button
           type="submit"
@@ -225,21 +196,6 @@ export function SignUpForm() {
           {pending ? "Creating account..." : "Create account"}
         </Button>
       </form>
-
-      <div className="mt-5 flex items-center gap-2 text-[11px] text-[#7d7d7d]">
-        <ShieldCheck className="size-3.5 shrink-0" />
-        Free to join. No credit card required.
-      </div>
-
-      <p className="mt-6 border-t border-white/[0.07] pt-5 text-center text-sm text-[#9a9a9a]">
-        Already have an account?{" "}
-        <Link
-          href="/sign-in"
-          className="font-medium text-white transition-colors hover:text-brand-muted"
-        >
-          Sign in
-        </Link>
-      </p>
-    </div>
+    </AuthCard>
   )
 }

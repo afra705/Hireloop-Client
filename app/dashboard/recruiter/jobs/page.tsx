@@ -1,7 +1,6 @@
 
 import Link from "next/link";
 import {
-  ChevronRightIcon,
   MapPinIcon,
   PencilIcon,
   PlusIcon,
@@ -9,51 +8,12 @@ import {
   CopyIcon,
 } from "lucide-react";
 
-import { cn } from "cn";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { StatusBadge } from "@/components/dashboard/status-badge";
 import { getJobs } from "@/lib/api/jobs";
+import { cn } from "@/lib/utils";
+import type { Job, JobStatus } from "@/types/job";
 import DeleteJobDialog from "./delete-job-dialog";
-
-type JobStatus = "Active" | "Expired";
-
-type Job = {
-  _id: string;
-  jobTitle: string;
-  companyName: string;
-  category: string;
-  jobType: "Full-time" | "Part-time" | "Contract" | "Internship";
-  isRemote: boolean;
-  location: string;
-  deadline: string;
-  minSalary: string;
-  maxSalary: string;
-  frequency: string;
-  responsibilities: string;
-  qualifications: string;
-  applicants?: number;
-};
-
-const StatusBadge = ({ status }: { status: JobStatus }) => {
-  const isActive = status === "Active";
-
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-medium",
-        isActive
-          ? "border-[#2FBF71]/20 bg-[#2FBF71]/10 text-[#5FD99A]"
-          : "border-white/[0.08] bg-white/[0.04] text-[#A1A4AA]"
-      )}
-    >
-      <span
-        className={cn(
-          "size-1 rounded-full",
-          isActive ? "bg-[#5FD99A]" : "bg-[#7C7F87]"
-        )}
-      />
-      {status}
-    </span>
-  );
-};
 
 const ManageJobsPage = async () => {
   const jobs: Job[] = await getJobs();
@@ -62,45 +22,24 @@ const ManageJobsPage = async () => {
     <div className="min-h-svh bg-[#0B0B0C] px-4 py-6 text-[#F4F4F5] sm:px-6 lg:px-8 lg:py-8">
       <div className="mx-auto w-full max-w-[1200px]">
 
-        {/* Header */}
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <nav
-              aria-label="Breadcrumb"
-              className="flex items-center gap-1.5 text-[11px] font-medium text-[#7C7F87]"
+        <PageHeader
+          className="mb-6"
+          breadcrumb={[
+            { label: "Manage Jobs", href: "/dashboard/recruiter/jobs" },
+            { label: "Job Listings & Posting" },
+          ]}
+          title="Manage Job Posts"
+          description="Review live listings, monitor applicants, and update job details across your organization."
+          action={
+            <Link
+              href="/dashboard/recruiter/jobs/new"
+              className="inline-flex h-9 shrink-0 items-center justify-center gap-2 self-start rounded-lg bg-[#5C53FE] px-4 text-xs font-semibold text-white shadow-[0_8px_24px_-8px_rgba(92,83,254,0.8)] transition-colors hover:bg-[#6C64FF] focus-visible:ring-2 focus-visible:ring-[#8F88FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0B0C] focus-visible:outline-none"
             >
-              <Link
-                href="/dashboard/recruiter/jobs"
-                className="transition-colors hover:text-[#F4F4F5]"
-              >
-                Manage Jobs
-              </Link>
-
-              <ChevronRightIcon className="size-3" />
-
-              <span className="text-[#A1A4AA]">
-                Job Listings &amp; Posting
-              </span>
-            </nav>
-
-            <h1 className="mt-4 text-2xl leading-8 font-semibold tracking-[-0.02em] text-white">
-              Manage Job Posts
-            </h1>
-
-            <p className="mt-1 text-xs text-[#7C7F87]">
-              Review live listings, monitor applicants, and update job details
-              across your organization.
-            </p>
-          </div>
-
-          <Link
-            href="/dashboard/recruiter/jobs/new"
-            className="inline-flex h-9 shrink-0 items-center justify-center gap-2 self-start rounded-lg bg-[#5C53FE] px-4 text-xs font-semibold text-white shadow-[0_8px_24px_-8px_rgba(92,83,254,0.8)] transition-colors hover:bg-[#6C64FF] focus-visible:ring-2 focus-visible:ring-[#8F88FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0B0C] focus-visible:outline-none"
-          >
-            <PlusIcon className="size-3.5" />
-            New Job Post
-          </Link>
-        </div>
+              <PlusIcon className="size-3.5" />
+              New Job Post
+            </Link>
+          }
+        />
 
         {/* Jobs Table */}
         <div className="overflow-x-auto border-y border-white/[0.06]">
@@ -139,10 +78,7 @@ const ManageJobsPage = async () => {
             <tbody>
               {jobs.length > 0 ? (
                 jobs.map((job) => {
-                  const status: JobStatus =
-                    new Date(job.deadline) >= new Date()
-                      ? "Active"
-                      : "Expired";
+                 const status: JobStatus = "Active";
 
                   return (
                     <tr

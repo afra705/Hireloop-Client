@@ -30,8 +30,7 @@ import {
 } from "@/components/ui/sidebar"
 
 import { authClient, useSession } from "@/lib/auth-client"
-
-type Role = "seeker" | "recruiter" | "admin"
+import type { Role } from "@/types/auth"
 
 type MenuItem = {
   name: string
