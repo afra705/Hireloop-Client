@@ -1,3 +1,4 @@
+import { getJobs } from '@/lib/api/jobs';
 import React from 'react';
 
 const BrowseJobsPage = async({searchParams}:{searchParams:Promise<{[key:string]: string | string[] | undefined}>}) => {
@@ -7,10 +8,13 @@ const BrowseJobsPage = async({searchParams}:{searchParams:Promise<{[key:string]:
     const quary = urlSearch.toString()
     console.log(quary);
     
+    const jobs = await getJobs(quary)
 
     return (
         <div className='text-white'>
-            sadff
+            {jobs.map((job)=>(
+                <li key={job._id}>{job.jobTitle}</li>
+            ))}
         </div>
     );
 };
