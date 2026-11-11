@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { LoaderCircle } from "lucide-react"
 
 import { AuthCard } from "@/components/auth/auth-card"
@@ -18,6 +18,11 @@ export function SignInForm({ success }: { success?: string }) {
   const [error, setError] = React.useState<string | null>(null)
   const [pending, setPending] = React.useState(false)
 
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirectTo') ?? '/'
+  console.log(redirectTo);
+  
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError(null)
@@ -32,7 +37,7 @@ export function SignInForm({ success }: { success?: string }) {
         email,
         password,
         rememberMe,
-        callbackURL: "/",
+        callbackURL: redirectTo
       })
 
       if (result.error) {
@@ -42,7 +47,7 @@ export function SignInForm({ success }: { success?: string }) {
         return
       }
 
-      router.push("/")
+      router.push(redirectTo)
       router.refresh()
     } catch {
       setError(

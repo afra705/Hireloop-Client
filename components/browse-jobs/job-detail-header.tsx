@@ -32,7 +32,8 @@ export function JobDetailHeader({ job }: JobDetailHeaderProps) {
           </div>
         </div>
 
-        <JobActions jobTitle={job.jobTitle} />
+        <JobActions jobTitle={job.jobTitle}   job={job}
+ />
       </div>
     </header>
   )

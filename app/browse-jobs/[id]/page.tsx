@@ -41,15 +41,15 @@ export async function generateMetadata({
 const JobsDetailsPage = async ({ params }: JobDetailsPageProps) => {
   const { id } = await params
   const job = await loadJob(id).catch(() => null)
-
+   
   if (!job) notFound()
-
+         
   const responsibilities = toBulletPoints(job.responsibilities)
   const qualifications = toBulletPoints(job.qualifications)
 
   const salary = formatSalaryRange(job)
   const deadline = formatJobDate(job.deadline)
-
+  
   const location = job.isRemote
     ? `${job.location ? `${job.location} ` : ""}(Remote)`
     : job.location || "Not specified"
