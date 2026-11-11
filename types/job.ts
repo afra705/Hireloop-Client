@@ -15,7 +15,7 @@ export type Job = {
   deadline: string
   minSalary: string
   maxSalary: string
-  frequency: string
+  frequency: Frequency
   responsibilities: string
   qualifications: string
   applicants?: number

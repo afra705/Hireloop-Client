@@ -1,12 +1,11 @@
-
 "use client"
-
 import { Button } from "@/components/ui/button"
 import { BookmarkButton } from "./bookmark-button"
 import { useSession } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
 import type { Job } from "@/types/job"
-import { email } from "better-auth"
+import type { JobApplicationInput } from "@/types/application"
+import { applyToAJob } from "@/lib/actions/jobs"
 
 type JobActionsProps = {
   jobTitle: string
@@ -25,29 +24,54 @@ export function JobActions({
   const { data: session } = useSession()
   const user = session?.user
 
- const handleApplyNow = () => {
-  if (!job?._id) {
-    console.error("Job data is missing")
-    return
-  }
+  const handleApplyNow = async () => {
+    if (!job?._id) {
+      console.error("Job data is missing")
+      return
+    }
 
-  if (!user) {
-    router.push(`/sign-in?redirectTo=/browse-jobs/${job._id}`)
-    return
-  }else{
-    const applications = {
+    if (!user) {
+      router.push(
+        `/sign-in?redirectTo=${encodeURIComponent(`/browse-jobs/${job._id}`)}`
+      )
+      return
+    }
+
+    // if (user.role !== "seeker") {
+    //   console.log("User is not a job seeker")
+    //   return
+    // }
+
+    const application: JobApplicationInput = {
       jobId: job._id,
       userId: user.id,
-      email:user.email,
+      email: user.email,
       jobTitle: job.jobTitle,
-      companyName: job.companyName
-
+      companyName: job.companyName,
+      category: job.category,
+      jobType: job.jobType,
+      workMode: job.isRemote ? "Remote" : "On-site",
+      location: job.location,
+      minSalary: job.minSalary,
+      maxSalary: job.maxSalary,
+      frequency: job.frequency,
+      status: "Applied",
+      appliedAt: new Date().toISOString(),
+      archived: false,
     }
-    
-  }
 
-  onApply?.()
-}
+    try {
+      const result = await applyToAJob(application)
+
+      if (result?.insertedId) {
+        console.log("Application submitted")
+        onApply?.()
+        router.push("/browse-jobs")
+      }
+    } catch (error) {
+      console.error("Application failed:", error)
+    }
+  }
 
   return (
     <div className="flex items-center gap-2">
