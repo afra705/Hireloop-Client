@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import type { Job } from "@/types/job"
 import type { JobApplicationInput } from "@/types/application"
 import { applyToAJob } from "@/lib/actions/jobs"
+import { getApplicationsCount } from "@/lib/api/applications"
 
 type JobActionsProps = {
   jobTitle: string
@@ -37,11 +38,18 @@ export function JobActions({
       return
     }
 
-    // if (user.role !== "seeker") {
-    //   console.log("User is not a job seeker")
-    //   return
-    // }
-
+    if (user.role !== "seeker") {
+      console.log("User is not a job seeker")
+      return
+    }
+    else if(user.role === 'seeker'){
+      const countResult = await getApplicationsCount(`applicantId=${user.id}`)
+      if(countResult.count >= 5){
+        router.push('dashboard/seeker/billing')
+      }
+    
+    }
+    else{
     const application: JobApplicationInput = {
       jobId: job._id,
       userId: user.id,
@@ -71,6 +79,9 @@ export function JobActions({
     } catch (error) {
       console.error("Application failed:", error)
     }
+
+    }
+
   }
 
   return (

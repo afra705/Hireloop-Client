@@ -72,11 +72,11 @@ const menuItemsByRole: Record<Role, MenuItem[]> = {
       url: "/dashboard/seeker/applications",
       icon: FileTextIcon,
     },
-    {
-      name: "Billing",
-      url: "/dashboard/seeker/billing",
-      icon: WalletIcon,
-    },
+ {
+  name: "Billing",
+  url: "/dashboard/seeker/billing",
+  icon: WalletIcon,
+},
     {
       name: "Settings",
       url: "/dashboard/seeker/settings",
