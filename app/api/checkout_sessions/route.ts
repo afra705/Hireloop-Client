@@ -5,10 +5,19 @@ import { stripe } from '@/lib/stripe'
 import { getSession } from '@/lib/core/server'
 
 export async function POST() {
-
-  const userSession = await getSession()
-
   try {
+    const userSession = await getSession()
+
+    if (!userSession?.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const userId = userSession.user.id
+    const userEmail = userSession.user.email
+
     const headersList = await headers()
     const origin = headersList.get('origin')
 
@@ -19,29 +28,40 @@ export async function POST() {
       )
     }
 
-    // Get Price ID from environment variable
     const priceId = process.env.STRIPE_PRICE_ID
 
     if (!priceId) {
       throw new Error('STRIPE_PRICE_ID is missing')
     }
 
-    // Create Checkout Session
-    
-const session = await stripe.checkout.sessions.create({
-  line_items: [
-    {
-      price: priceId,
-      quantity: 1,
-    },
-  ],
-  mode: 'subscription',
-  customer_email: userSession?.user.email,
-  success_url: `${origin}/dashboard/seeker/billing/success?session_id={CHECKOUT_SESSION_ID}`,
+    const session = await stripe.checkout.sessions.create({
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
 
-  cancel_url: `${origin}/dashboard/seeker/billing`,
-})
+      mode: 'subscription',
 
+      customer_email: userEmail,
+
+      // Store MongoDB user ID
+      metadata: {
+        userId: userId,
+      },
+
+      // Also attach metadata to subscription
+      subscription_data: {
+        metadata: {
+          userId: userId,
+        },
+      },
+
+      success_url: `${origin}/dashboard/seeker/billing/success?session_id={CHECKOUT_SESSION_ID}`,
+
+      cancel_url: `${origin}/dashboard/seeker/billing`,
+    })
 
     return NextResponse.redirect(session.url!, 303)
 

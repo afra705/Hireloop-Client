@@ -26,32 +26,35 @@ export function JobActions({
   const { data: session } = useSession()
   const user = session?.user
 
-  const handleApplyNow = async () => {
-    if (!job?._id) {
-      console.error("Job data is missing")
+ 
+const handleApplyNow = async () => {
+  if (!job?._id) {
+    toast.error("Job data is missing")
+    return
+  }
+
+  if (!user) {
+    router.push(
+      `/sign-in?redirectTo=${encodeURIComponent(`/browse-jobs/${job._id}`)}`
+    )
+    return
+  }
+
+  if (user.role !== "seeker") {
+    toast.error("Only job seekers can apply!")
+    return
+  }
+
+  try {
+    const countResult = await getApplicationsCount(
+      `applicantId=${user.id}`
+    )
+
+    if (countResult.count >= 2) {
+      router.push("/dashboard/seeker/billing")
       return
     }
 
-    if (!user) {
-      router.push(
-        `/sign-in?redirectTo=${encodeURIComponent(`/browse-jobs/${job._id}`)}`
-      )
-      return
-    }
-
-    if (user.role !== "seeker") {
-      console.log("User is not a job seeker")
-      return
-    }
-    else if(user.role === 'seeker'){
-      const countResult = await getApplicationsCount(`applicantId=${user.id}`)
-      if(countResult.count >= 2){
-        router.push('dashboard/seeker/billing')
-        toast.success('Apply successfully!')
-      }
-    
-    }
-    else{
     const application: JobApplicationInput = {
       jobId: job._id,
       userId: user.id,
@@ -70,21 +73,22 @@ export function JobActions({
       archived: false,
     }
 
-    try {
-      const result = await applyToAJob(application)
+    const result = await applyToAJob(application)
 
-      if (result?.insertedId) {
-        console.log("Application submitted")
-        onApply?.()
-        router.push("/browse-jobs")
-      }
-    } catch (error) {
-      console.error("Application failed:", error)
+    if (result?.insertedId) {
+      toast.success("Applied successfully!")
+      onApply?.()
+      router.push("/browse-jobs")
+    } else {
+      toast.error("Application submission failed!")
     }
 
-    }
-
+  } catch (error) {
+    console.error("Application failed:", error)
+    toast.error("Something went wrong!")
   }
+}
+
 
   return (
     <div className="flex items-center gap-2">
