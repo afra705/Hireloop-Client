@@ -7,6 +7,7 @@ import type { Job } from "@/types/job"
 import type { JobApplicationInput } from "@/types/application"
 import { applyToAJob } from "@/lib/actions/jobs"
 import { getApplicationsCount } from "@/lib/api/applications"
+import { toast } from "sonner"
 
 type JobActionsProps = {
   jobTitle: string
@@ -44,8 +45,9 @@ export function JobActions({
     }
     else if(user.role === 'seeker'){
       const countResult = await getApplicationsCount(`applicantId=${user.id}`)
-      if(countResult.count >= 5){
+      if(countResult.count >= 2){
         router.push('dashboard/seeker/billing')
+        toast.success('Apply successfully!')
       }
     
     }
