@@ -8,6 +8,7 @@ import type { JobApplicationInput } from "@/types/application"
 import { applyToAJob } from "@/lib/actions/jobs"
 import { getApplicationsCount } from "@/lib/api/applications"
 import { toast } from "sonner"
+import { getUserPremium } from "@/lib/api/users"
 
 type JobActionsProps = {
   jobTitle: string
@@ -50,7 +51,11 @@ const handleApplyNow = async () => {
       `applicantId=${user.id}`
     )
 
-    if (countResult.count >= 2) {
+    const premiumResult = await getUserPremium(user.id)
+    
+   console.log('premiumresult', premiumResult);
+   
+    if (!premiumResult.premium && countResult.count >= 2) {
       router.push("/dashboard/seeker/billing")
       return
     }
