@@ -8,3 +8,16 @@ export type AppUser = {
   role?: Role
   image?: string | null
 }
+
+export type UserStatus = "Active" | "Suspended"
+
+/** Normalised user row used by the admin user management table. */
+export type AdminUserRow = {
+  id: string
+  name: string
+  email: string
+  role: Role
+  image?: string | null
+  createdAt: string
+  status: UserStatus
+}

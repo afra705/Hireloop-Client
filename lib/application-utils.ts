@@ -11,16 +11,6 @@ export function formatApplicationDate(value: string) {
   })
 }
 
-/** Build avatar initials from a person's name. */
-export function getInitials(name: string) {
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join("")
-}
-
 export function formatRelativeTime(value: string) {
   const date = new Date(value)
 

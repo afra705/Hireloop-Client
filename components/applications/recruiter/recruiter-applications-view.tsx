@@ -7,8 +7,8 @@ import { toast } from "sonner"
 import {
   formatApplicationDate,
   formatRelativeTime,
-  getInitials,
 } from "@/lib/application-utils"
+import { getInitials } from "@/lib/utils"
 import type { ApplicationStatus, JobApplicant } from "@/types/application"
 
 import { ApplicantStats } from "./applicant-stats"
