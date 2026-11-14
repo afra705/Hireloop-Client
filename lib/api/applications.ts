@@ -22,3 +22,10 @@ export const getApplicationsCount = async (
 
   return res.json()
 }
+
+/** Fetch every application submitted for a single job. */
+export const getApplicationsByJob = async (
+  jobId: string
+): Promise<JobApplication[]> => {
+  return getApplications(`jobId=${encodeURIComponent(jobId)}`)
+}

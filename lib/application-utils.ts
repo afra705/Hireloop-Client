@@ -1,3 +1,26 @@
+/** Format an application timestamp as e.g. "14 Nov 2026". */
+export function formatApplicationDate(value: string) {
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) return "—"
+
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  })
+}
+
+/** Build avatar initials from a person's name. */
+export function getInitials(name: string) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("")
+}
+
 export function formatRelativeTime(value: string) {
   const date = new Date(value)
 

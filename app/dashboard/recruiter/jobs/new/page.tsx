@@ -31,6 +31,7 @@ import {
 } from "@/lib/constants/jobs"
 import { cn } from "@/lib/utils"
 import type { JobForm } from "@/types/job"
+import { useSession } from "@/lib/auth-client"
 
 // Kept for backwards compatibility with existing imports from this page.
 export type { JobForm }
@@ -60,20 +61,30 @@ const AddJobsPage = () => {
       isRemote: !previous.isRemote,
     }))
   }
-
+  const { data: session } = useSession()
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+    if(!session?.user?.id){
+      toast.error("Please login first!")
+    return
+    }
+
     setIsSubmitting(true)
 
     try {
-      const result = await CreatJob(formData)
+      const result = await CreatJob({
+        ...formData,
+          recruiterId: session.user.id,
+      }
+      )
 
       console.log("result:", result)
 
       if (result.insertedId) {
         toast.success("Job created successfully!")
         setFormData(INITIAL_JOB_FORM)
-        // router.push("/dashboard/recruiter/jobs");
+
       } else {
         toast.error("Failed to create job!")
       }

@@ -6,6 +6,7 @@ import {
   PlusIcon,
   UsersIcon,
   CopyIcon,
+  FileTextIcon,
 } from "lucide-react";
 
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -14,9 +15,14 @@ import { getJobs } from "@/lib/api/jobs";
 import { cn } from "@/lib/utils";
 import type { Job, JobStatus } from "@/types/job";
 import DeleteJobDialog from "./delete-job-dialog";
+import { getSession } from "@/lib/core/server";
+
 
 const ManageJobsPage = async () => {
-  const jobs: Job[] = await getJobs();
+  const session = await getSession();
+  console.log('recruiter', session?.user.id);
+  
+  const jobs: Job[] = await getJobs(`recruiterId=${session?.user.id}`);
 
   return (
     <div className="min-h-svh bg-[#0B0B0C] px-4 py-6 text-[#F4F4F5] sm:px-6 lg:px-8 lg:py-8">
@@ -43,7 +49,7 @@ const ManageJobsPage = async () => {
 
         {/* Jobs Table */}
         <div className="overflow-x-auto border-y border-white/[0.06]">
-          <table className="w-full min-w-[1020px] border-collapse text-left">
+          <table className="w-full min-w-[1140px] border-collapse text-left">
             <caption className="sr-only">
               List of job posts
             </caption>
@@ -172,6 +178,16 @@ const ManageJobsPage = async () => {
                       {/* Actions */}
                       <td className="px-3 py-2.5 pr-4">
                         <div className="flex items-center justify-end gap-1.5">
+
+                          <Link
+                            href={`/dashboard/recruiter/jobs/${job._id}/applications`}
+                            aria-label={`View applications for ${job.jobTitle}`}
+                            title="View applications"
+                            className="inline-flex h-6 items-center gap-1 rounded-md border border-white/[0.08] bg-white/[0.03] px-2 text-[10px] font-medium whitespace-nowrap text-[#D4D4D8] transition-colors hover:border-white/[0.14] hover:bg-white/[0.06] hover:text-white focus-visible:ring-2 focus-visible:ring-[#5C53FE]/60 focus-visible:outline-none"
+                          >
+                            <FileTextIcon className="size-2.5" />
+                            View Applications
+                          </Link>
 
                           <Link
                             href={`/dashboard/recruiter/jobs/${job._id}/edit`}

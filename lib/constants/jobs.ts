@@ -27,6 +27,8 @@ export const JOB_CATEGORIES = [
 
 export const INITIAL_JOB_FORM: JobForm = {
   jobTitle: "",
+    recruiterId: '',
+    companyId: '',
   companyName: "",
   category: "",
   jobType: "Full-time",

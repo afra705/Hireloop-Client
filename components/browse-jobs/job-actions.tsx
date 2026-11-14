@@ -77,7 +77,8 @@ const handleApplyNow = async () => {
       appliedAt: new Date().toISOString(),
       archived: false,
     }
-
+console.log("Job ID:", job._id)
+console.log("Application object:", application)
     const result = await applyToAJob(application)
 
     if (result?.insertedId) {

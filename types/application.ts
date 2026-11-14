@@ -43,3 +43,20 @@ export type JobApplication = JobApplicationSnapshot & {
 
 /** Payload sent to the API when a seeker applies to a job. */
 export type JobApplicationInput = Omit<JobApplication, "_id" | "updatedAt">
+
+/**
+ * Applicant row used on the recruiter dashboard.
+ *
+ * Combines an application with the seeker's profile so the UI has everything
+ * it needs in one place.
+ */
+export type JobApplicant = {
+  id: string
+  userId: string
+  name: string
+  email: string
+  status: ApplicationStatus
+  appliedAt: string
+  jobType: JobType
+  workMode: WorkMode
+}

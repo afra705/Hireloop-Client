@@ -7,6 +7,7 @@ export type JobStatus = "Active" | "Expired"
 export type Job = {
   _id: string
   jobTitle: string
+  recruiterId?: string
   companyName: string
   category: string
   jobType: JobType
@@ -21,8 +22,10 @@ export type Job = {
   applicants?: number
 }
 
-export type JobForm = {
+export type JobForm = {    
   jobTitle: string
+  recruiterId: string
+  companyId?: string
   companyName: string
   category: string
   jobType: JobType
