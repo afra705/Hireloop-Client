@@ -13,6 +13,7 @@ import type { ApplicationStatus, JobApplicant } from "@/types/application"
 
 import { ApplicantStats } from "./applicant-stats"
 import { ApplicantStatusSelect } from "./applicant-status-select"
+import { updatedApplicationStatus } from "@/lib/actions/applications"
 
 type RecruiterApplicationsViewProps = {
   initialApplicants: JobApplicant[]
@@ -34,22 +35,40 @@ export function RecruiterApplicationsView({
     [applicants]
   )
 
-  const handleStatusChange = (
-    applicantId: string,
-    status: ApplicationStatus
-  ) => {
-    const applicant = applicants.find((item) => item.id === applicantId)
+  const handleStatusChange = async (
+  applicantId: string,
+  status: ApplicationStatus
+) => {
+  const applicant = applicants.find(
+    (item) => item.id === applicantId
+  )
+
+  if (!applicant) return
+
+  try {
+    const result = await updatedApplicationStatus(
+      applicantId,
+      { status }
+    )
+
+    console.log("Update:", result)
 
     setApplicants((previous) =>
       previous.map((item) =>
-        item.id === applicantId ? { ...item, status } : item
+        item.id === applicantId
+          ? { ...item, status }
+          : item
       )
     )
 
     toast.success(`Status updated to ${status}`, {
-      description: `${applicant?.name ?? "Applicant"} — saved in this session only.`,
+      description: `${applicant.name} — status updated.`,
     })
+  } catch (error) {
+    console.error("Status update failed:", error)
+    toast.error("Failed to update application status")
   }
+}
 
   return (
     <div className="space-y-4">
