@@ -22,6 +22,7 @@ import type { AdminUserRow } from "@/types/user"
 
 import { UserStats } from "./user-stats"
 import { UserTable } from "./user-table"
+import { updateUserRole } from "@/lib/actions/users"
 
 type UserManagementViewProps = {
   initialUsers: AdminUserRow[]
@@ -51,7 +52,13 @@ export function UserManagementView({
 
   const hasActiveFilters = query.trim().length > 0 || roleFilter !== "all"
 
-  const handleRoleChange = (userId: string, role: Role) => {
+  // role change
+  const handleRoleChange = async(userId: string, role: Role) => {
+
+    const res = await updateUserRole(userId, role)
+    console.log('res after update', res);
+    
+
     const target = users.find((user) => user.id === userId)
 
     setUsers((previous) =>
@@ -59,7 +66,7 @@ export function UserManagementView({
         user.id === userId ? { ...user, role } : user
       )
     )
-
+  
     toast.success(`Role updated to ${ROLE_LABELS[role]}`, {
       description: `${target?.name ?? "User"} — UI only. Role persistence is not connected yet.`,
     })
