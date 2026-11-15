@@ -4,8 +4,8 @@ import * as React from "react"
 import { useRouter } from "next/navigation"
 import {
   BriefcaseBusiness,
+  ImagePlus,
   LoaderCircle,
-  ShieldCheck,
   UserRound,
 } from "lucide-react"
 
@@ -13,7 +13,7 @@ import { AuthCard } from "@/components/auth/auth-card"
 import { AuthField, authFieldClassName } from "@/components/auth/auth-field"
 import { FormAlert } from "@/components/auth/form-alert"
 import { PasswordInput } from "@/app/(auth)/_components/password-input"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { signUp } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
@@ -32,12 +32,6 @@ const roles = [
     description: "Post jobs and discover great talent.",
     icon: BriefcaseBusiness,
   },
-  {
-    value: "admin",
-    label: "Admin",
-    description: "Manage the HireLoop platform.",
-    icon: ShieldCheck,
-  },
 ] as const
 
 export function SignUpForm() {
@@ -45,6 +39,39 @@ export function SignUpForm() {
   const [error, setError] = React.useState<string | null>(null)
   const [pending, setPending] = React.useState(false)
   const [role, setRole] = React.useState<Role>("seeker")
+  const [imagePreview, setImagePreview] = React.useState<string | null>(null)
+
+
+// handleimg
+
+ const handleImageChange = async (
+  event: React.ChangeEvent<HTMLInputElement>
+) => {
+  const file = event.target.files?.[0]
+
+  if (!file) {
+    setImagePreview(null)
+    return
+  }
+
+  const formData = new FormData()
+  formData.append("image", file)
+
+  const imgbbAPI = `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`
+
+  const res = await fetch(imgbbAPI, {
+    method: "POST",
+    body: formData,
+  })
+
+  const result = await res.json()
+
+  if (result.success) {
+    setImagePreview(result.data.display_url)
+  }
+
+  console.log(result)
+}
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -67,8 +94,9 @@ export function SignUpForm() {
         name,
         email,
         password,
+          image: imagePreview ?? undefined,
         role,
-        // callbackURL: "/sign-in",
+        callbackURL: "/sign-in",
       })
 
       if (result.error) {
@@ -107,7 +135,7 @@ export function SignUpForm() {
           <legend className="text-[13px] font-medium text-[#d4d4d4]">
             I&apos;m joining as
           </legend>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {roles.map((option) => {
               const Icon = option.icon
               const isSelected = role === option.value
@@ -145,6 +173,50 @@ export function SignUpForm() {
             {roles.find((option) => option.value === role)?.description}
           </p>
         </fieldset>
+
+        <AuthField
+          label="Profile photo"
+          htmlFor="image"
+          hint="JPG, PNG or WebP. Max 5 MB."
+        >
+          <div className="flex items-center gap-3">
+            <div
+              aria-hidden
+              className="flex size-14 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] bg-cover bg-center text-[#8b8b8b]"
+              style={
+                imagePreview
+                  ? { backgroundImage: `url("${imagePreview}")` }
+                  : undefined
+              }
+            >
+              {imagePreview ? null : <ImagePlus className="size-5" />}
+            </div>
+
+            <input
+              id="image"
+              name="image"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="sr-only"
+            />
+
+            <div className="min-w-0">
+              <label
+                htmlFor="image"
+                className={cn(
+                  buttonVariants({ variant: "outline" }),
+                  "h-9 cursor-pointer rounded-xl border-white/10 bg-white/[0.04] px-3.5 text-xs text-white hover:bg-white/[0.08]"
+                )}
+              >
+                Choose image
+              </label>
+              <p className="mt-1 truncate text-[11px] text-[#7d7d7d]">
+                {imagePreview ? "Image selected" : "No image selected"}
+              </p>
+            </div>
+          </div>
+        </AuthField>
 
         <AuthField label="Full name" htmlFor="name">
           <Input

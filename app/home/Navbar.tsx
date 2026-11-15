@@ -5,6 +5,12 @@ import { useRouter } from "next/navigation"
 import { buttonVariants } from "@/components/ui/button"
 import { authClient } from "@/lib/auth-client"
 
+const placeholderAvatarByRole: Record<string, string> = {
+  seeker: "/images/avatars/seeker.png",
+  recruiter: "/images/avatars/recruiter.png",
+  admin: "/images/avatars/admin.png",
+}
+
 export function Navbar() {
   const router = useRouter()
   const { data: session, isPending } = authClient.useSession()
@@ -73,10 +79,24 @@ const navLinks = [
 
             {isPending ? null : session?.user ? (
               <>
-                {/* Logged In User Name */}
-                <span className="text-sm font-medium whitespace-nowrap text-white">
-                  {session.user.name}
-                </span>
+                {/* Logged In User Avatar + Name */}
+                <div className="flex items-center gap-2.5">
+                  <div
+                    role="img"
+                    aria-label={`${session.user.name} avatar`}
+                    className="size-9 shrink-0 rounded-full bg-cover bg-center ring-1 ring-white/10"
+                    style={{
+                      backgroundImage: `url("${
+                        session.user.image ||
+                        placeholderAvatarByRole[session.user.role ?? "seeker"] ||
+                        "/images/avatars/seeker.png"
+                      }")`,
+                    }}
+                  />
+                  <span className="text-sm font-medium whitespace-nowrap text-white">
+                    {session.user.name}
+                  </span>
+                </div>
 
                 {/* Logout Button */}
                 <button

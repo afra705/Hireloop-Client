@@ -1,34 +1,29 @@
+'use server'
 import type { AppUser } from "@/types/user"
-import { auth } from "../auth"
-import { headers } from "next/headers"
+import { authFetch } from "../core/server"
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000"
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000"
 
 export const getUserPremium = async (userId: string) => {
   const res = await fetch(`${BASE_URL}/users/${userId}/premium`, {
     cache: "no-store",
   })
 
+  if (!res.ok) {
+    throw new Error("Failed to load premium status")
+  }
+
   return res.json()
 }
 
-export const getUserS=async()=>{
-  const users = await auth.api.listUsers({
-    query: {    
-        sortBy: "name", 
-        sortDirection: "desc", 
-       
-    },
-    headers: await headers(),
-});
-return users;
+export const getAdminUsers  = async()=>{
+  const res = await authFetch(`${BASE_URL}/users`, {
+    cache: "no-store",
+  })
+  return res.json()
 }
-/**
- * Fetch users from the API.
- *
- * Used by the recruiter dashboard to resolve applicant names from the
- * `userId` stored on each application.
- */
+
 export const getUsers = async (): Promise<AppUser[]> => {
   const res = await fetch(`${BASE_URL}/users`, {
     cache: "no-store",

@@ -6,7 +6,7 @@ import { ArrowLeftIcon } from "lucide-react"
 
 import { RecruiterApplicationsView } from "@/components/applications/recruiter/recruiter-applications-view"
 import { PageHeader } from "@/components/dashboard/page-header"
-import { getApplicationsByJob } from "@/lib/api/applications"
+import { getApplicationsByJob } from "@/lib/api/applications-server"
 import { getJobById } from "@/lib/api/jobs"
 import { getUsers } from "@/lib/api/users"
 import { getSession } from "@/lib/core/server"

@@ -4,7 +4,7 @@ import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 
 import { ApplicationsView } from "@/components/applications/applications-view"
-import { getApplications } from "@/lib/api/applications"
+import { getApplications } from "@/lib/api/applications-server"
 import { auth } from "@/lib/auth"
 
 export const metadata: Metadata = {

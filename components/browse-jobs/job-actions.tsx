@@ -41,10 +41,7 @@ const handleApplyNow = async () => {
     return
   }
 
-  if (user.role !== "seeker") {
-    toast.error("Only job seekers can apply!")
-    return
-  }
+ 
 
   try {
     const countResult = await getApplicationsCount(
@@ -55,7 +52,7 @@ const handleApplyNow = async () => {
     
    console.log('premiumresult', premiumResult);
    
-    if (!premiumResult.premium && countResult.count >= 2) {
+    if (!premiumResult.premium && countResult.count >= 20) {
       router.push("/dashboard/seeker/billing")
       return
     }
@@ -77,9 +74,10 @@ const handleApplyNow = async () => {
       appliedAt: new Date().toISOString(),
       archived: false,
     }
-console.log("Job ID:", job._id)
-console.log("Application object:", application)
+
     const result = await applyToAJob(application)
+    console.log('result', result);
+    
 
     if (result?.insertedId) {
       toast.success("Applied successfully!")

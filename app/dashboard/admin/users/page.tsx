@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 
 import { UserManagementView } from "@/components/dashboard/users/user-management-view"
-import { getUserS } from "@/lib/api/users"
+
 import { getSession } from "@/lib/core/server"
 import {
   countNewSignups,
@@ -11,6 +11,7 @@ import {
   toIsoDate,
 } from "@/lib/user-utils"
 import type { AdminUserRow } from "@/types/user"
+import { getAdminUsers  } from "@/lib/api/users"
 
 export const metadata: Metadata = {
   title: "User Management | HireLoop",
@@ -40,10 +41,10 @@ const AdminUsersPage = async () => {
     )
   }
 
-  const { users } = await getUserS()
+  const users  = await getAdminUsers ()
 
   const rows: AdminUserRow[] = users.map((user) => ({
-    id: user.id,
+    id: user._id,
     name: user.name || "Unnamed user",
     email: user.email,
     role: normalizeRole(user.role),
